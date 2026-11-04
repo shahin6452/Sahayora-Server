@@ -1,11 +1,14 @@
 
-require("dotenv").config();
+import "dotenv/config";
 
-const express = require("express");
-const cors = require("cors");
-const connectDB = require("./config/db");
+import express from "express";
+import cors from "cors";
 
-const eventRoutes = require("./routes/eventRoutes");
+import connectDB from "./config/db.js";
+import eventRoutes from "./routes/eventRoutes.js";
+
+import { auth } from "./auth.mjs";
+import { toNodeHandler } from "better-auth/node";
 
 const app = express();
 
@@ -20,11 +23,7 @@ const startServer = async () => {
   try {
     await connectDB();
 
-    // Load Better Auth using dynamic imports
-    const { auth } = await import("./auth.mjs");
-    const { toNodeHandler } = await import("better-auth/node");
-
-    // Better Auth routes must come before express.json()
+    // Better Auth routes
     app.all(/^\/api\/auth\/.*/, toNodeHandler(auth));
 
     app.use(express.json());
