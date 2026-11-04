@@ -1,8 +1,10 @@
+
 {
   "name": "server",
   "version": "1.0.0",
-  "description": "",
+  "description": "Sahayora Backend API",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js"
@@ -14,7 +16,6 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
   "bugs": {
     "url": "https://github.com/shahin6452/Sahayora-Server/issues"
   },

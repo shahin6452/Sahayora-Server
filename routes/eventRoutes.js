@@ -1,11 +1,12 @@
 
-const express = require("express");
-const router = express.Router();
+import express from "express";
 
-const {
+import {
   getUpcomingEvents,
   getEventById,
-} = require("../controllers/eventController");
+} from "../controllers/eventController.js";
+
+const router = express.Router();
 
 // GET /api/events
 router.get("/", getUpcomingEvents);
@@ -13,4 +14,4 @@ router.get("/", getUpcomingEvents);
 // GET /api/events/:id
 router.get("/:id", getEventById);
 
-module.exports = router;
+export default router;

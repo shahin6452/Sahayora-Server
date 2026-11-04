@@ -1,8 +1,8 @@
 
-const Event = require("../models/Event");
+import Event from "../models/Event.js";
 
 // Get all upcoming events
-const getUpcomingEvents = async (req, res) => {
+export const getUpcomingEvents = async (req, res) => {
   try {
     const events = await Event.find({
       date: { $gt: new Date() },
@@ -24,7 +24,7 @@ const getUpcomingEvents = async (req, res) => {
 };
 
 // Get single event details
-const getEventById = async (req, res) => {
+export const getEventById = async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -54,9 +54,4 @@ const getEventById = async (req, res) => {
       message: "Failed to fetch event details",
     });
   }
-};
-
-module.exports = {
-  getUpcomingEvents,
-  getEventById,
 };
