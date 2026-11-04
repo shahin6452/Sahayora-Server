@@ -5,21 +5,29 @@ const express = require("express");
 const cors = require("cors");
 const connectDB = require("./config/db");
 
+const eventRoutes = require("./routes/eventRoutes");
+
 const app = express();
 
-app.use(cors({
-  origin: process.env.CLIENT_URL || "http://localhost:3000",
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL || "http://localhost:3000",
+    credentials: true,
+  })
+);
 
 app.use(express.json());
 
+// Health check
 app.get("/", (req, res) => {
   res.status(200).json({
     success: true,
     message: "Sahayora API is running!",
   });
 });
+
+// Event API routes
+app.use("/api/events", eventRoutes);
 
 const PORT = process.env.PORT || 5000;
 
