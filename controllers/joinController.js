@@ -117,3 +117,41 @@ export const getJoinedEvents = async (req, res) => {
     });
   }
 };
+
+// Leave an event
+export const leaveEvent = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!/^[0-9a-fA-F]{24}$/.test(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid event ID",
+      });
+    }
+
+    const joined = await Join.findOneAndDelete({
+      eventId: id,
+      userId: req.user.id,
+    });
+
+    if (!joined) {
+      return res.status(404).json({
+        success: false,
+        message: "You have not joined this event",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "You have successfully left this event!",
+    });
+  } catch (error) {
+    console.error("Leave Event Error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to leave event",
+    });
+  }
+};

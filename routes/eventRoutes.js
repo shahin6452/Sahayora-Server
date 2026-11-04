@@ -14,6 +14,7 @@ import {
   joinEvent,
   checkJoinedEvent,
   getJoinedEvents,
+  leaveEvent,
 } from "../controllers/joinController.js";
 
 import requireAuth from "../middleware/requireAuth.js";
@@ -34,6 +35,9 @@ router.get("/joined", requireAuth, getJoinedEvents);
 
 // Join an event
 router.post("/:id/join", requireAuth, joinEvent);
+
+// Leave an event
+router.delete("/:id/leave", requireAuth, leaveEvent);
 
 // Check joined status
 router.get("/:id/join-status", requireAuth, checkJoinedEvent);
