@@ -16,6 +16,16 @@ const joinSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    userName: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    userImage: {
+      type: String,
+      default: "",
+      trim: true,
+    },
     userEmail: {
       type: String,
       required: true,

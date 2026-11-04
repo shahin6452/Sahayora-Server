@@ -2,6 +2,11 @@
 import Event from "../models/Event.js";
 import Join from "../models/Join.js";
 
+const getAvatar = (nameOrEmail) =>
+  `https://api.dicebear.com/9.x/adventurer/svg?seed=${encodeURIComponent(
+    nameOrEmail || "Sahayora"
+  )}`;
+
 // Join an event
 export const joinEvent = async (req, res) => {
   try {
@@ -26,10 +31,15 @@ export const joinEvent = async (req, res) => {
       });
     }
 
+    const userName =
+      req.user.name?.trim() || req.user.email.split("@")[0];
+
     const joined = await Join.create({
       eventId: event._id,
       eventTitle: event.title,
       userId: req.user.id,
+      userName,
+      userImage: req.user.image || getAvatar(userName),
       userEmail: req.user.email,
     });
 

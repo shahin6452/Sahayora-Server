@@ -1,5 +1,11 @@
 
 import Event from "../models/Event.js";
+import Join from "../models/Join.js";
+
+const getAvatar = (nameOrEmail) =>
+  `https://api.dicebear.com/9.x/adventurer/svg?seed=${encodeURIComponent(
+    nameOrEmail || "Sahayora"
+  )}`;
 
 // Create Event
 export const createEvent = async (req, res) => {
@@ -29,6 +35,9 @@ export const createEvent = async (req, res) => {
       });
     }
 
+    const creatorName =
+      req.user.name?.trim() || req.user.email.split("@")[0];
+
     const event = await Event.create({
       title: title.trim(),
       description: description.trim(),
@@ -36,6 +45,9 @@ export const createEvent = async (req, res) => {
       image: image.trim(),
       location: location.trim(),
       date: eventDate,
+      creatorId: req.user.id,
+      creatorName,
+      creatorImage: req.user.image || getAvatar(creatorName),
       creatorEmail: req.user.email,
     });
 
@@ -84,7 +96,7 @@ export const getUpcomingEvents = async (req, res) => {
   }
 };
 
-// Get Event Details
+// Get Event Details with Organizer and Volunteers
 export const getEventById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -96,7 +108,7 @@ export const getEventById = async (req, res) => {
       });
     }
 
-    const event = await Event.findById(id);
+    const event = await Event.findById(id).lean();
 
     if (!event) {
       return res.status(404).json({
@@ -105,9 +117,38 @@ export const getEventById = async (req, res) => {
       });
     }
 
+    const joins = await Join.find({ eventId: id })
+      .select("userId userName userImage userEmail")
+      .sort({ createdAt: 1 })
+      .lean();
+
+    const organizerName =
+      event.creatorName || event.creatorEmail?.split("@")[0] || "Organizer";
+
+    const organizer = {
+      id: event.creatorId || "",
+      name: organizerName,
+      email: event.creatorEmail,
+      image: event.creatorImage || getAvatar(organizerName),
+    };
+
+    const volunteers = joins.map((join) => {
+      const name =
+        join.userName || join.userEmail?.split("@")[0] || "Volunteer";
+
+      return {
+        id: join.userId,
+        name,
+        image: join.userImage || getAvatar(name),
+      };
+    });
+
     return res.status(200).json({
       success: true,
       event,
+      organizer,
+      volunteerCount: volunteers.length,
+      volunteers,
     });
   } catch (error) {
     console.error("Get Event By ID Error:", error);
@@ -241,6 +282,9 @@ export const deleteEvent = async (req, res) => {
         message: "Event not found or you are not the owner",
       });
     }
+
+    // Remove volunteer records when an event is deleted
+    await Join.deleteMany({ eventId: id });
 
     return res.status(200).json({
       success: true,
