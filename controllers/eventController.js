@@ -96,6 +96,32 @@ export const getUpcomingEvents = async (req, res) => {
   }
 };
 
+// past events
+
+// Get All Completed Events
+export const getCompletedEvents = async (req, res) => {
+  try {
+    const events = await Event.find({
+      date: { $lte: new Date() },
+    }).sort({ date: -1 });
+
+    return res.status(200).json({
+      success: true,
+      count: events.length,
+      events,
+    });
+  } catch (error) {
+    console.error("Get Completed Events Error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch completed events",
+    });
+  }
+};
+
+
+
 // Get Event Details with Organizer and Volunteers
 export const getEventById = async (req, res) => {
   try {

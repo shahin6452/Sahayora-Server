@@ -1,9 +1,9 @@
-
 import express from "express";
 
 import {
   createEvent,
   getUpcomingEvents,
+  getCompletedEvents,
   getEventById,
   getMyEvents,
   updateEvent,
@@ -23,6 +23,9 @@ const router = express.Router();
 
 // Get all upcoming events
 router.get("/", getUpcomingEvents);
+
+// Get all completed events
+router.get("/completed", getCompletedEvents);
 
 // Create a new event
 router.post("/", requireAuth, createEvent);
